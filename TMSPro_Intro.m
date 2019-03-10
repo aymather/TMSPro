@@ -22,7 +22,7 @@ function varargout = TMSPro_Intro(varargin)
 
 % Edit the above text to modify the response to help TMSPro_Intro
 
-% Last Modified by GUIDE v2.5 09-Mar-2019 21:09:22
+% Last Modified by GUIDE v2.5 09-Mar-2019 23:40:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -120,36 +120,6 @@ varargout{1} = handles.output;
 % The figure can be deleted now
 delete(handles.figure1);
 
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.output = get(hObject,'String');
-
-% Update handles structure
-guidata(hObject, handles);
-
-% Use UIRESUME instead of delete because the OutputFcn needs
-% to get the updated handles structure.
-uiresume(handles.figure1);
-
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.output = get(hObject,'String');
-
-% Update handles structure
-guidata(hObject, handles);
-
-% Use UIRESUME instead of delete because the OutputFcn needs
-% to get the updated handles structure.
-uiresume(handles.figure1);
-
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
@@ -186,3 +156,35 @@ end
 if isequal(get(hObject,'CurrentKey'),'return')
     uiresume(handles.figure1);
 end    
+
+
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles.output = get(hObject,'String');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);
+
+
+% --- Executes on button press in pushbutton4.
+function pushbutton4_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles.output = get(hObject,'String');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);

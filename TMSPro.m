@@ -52,8 +52,10 @@ function TMSPro_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to TMSPro (see VARARGIN)
 
+resp = TMSPro_Intro;
+
 % Initialize
-settings = TMSPro_init;
+settings = TMSPro_init(resp);
 
 % Choose default command line output for TMSPro
 handles.output = hObject;
