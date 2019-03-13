@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 12-Mar-2019 17:50:24
+% Last Modified by GUIDE v2.5 13-Mar-2019 16:33:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -70,9 +70,6 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes TMSPro wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
-
 
 % --- Outputs from this function are returned to the command line.
 function varargout = TMSPro_OutputFcn(hObject, eventdata, handles) 
@@ -112,3 +109,228 @@ ShowFrameOnAxis(handles);
 
 % Update handles structure
 guidata(hObject, handles);
+
+
+% --- Executes on key press with focus on figure1 or any of its controls.
+% Handles Keyboard Shortcuts
+function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.FIGURE)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+
+% Handles keyboard shortcuts
+switch eventdata.Key
+    
+    case 'rightarrow'
+        pushbutton3_Callback(handles.pushbutton3, eventdata, handles);
+        
+    case 'leftarrow'
+        pushbutton2_Callback(handles.pushbutton2, eventdata, handles);
+        
+    case 's'
+        pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
+        disp('Saved!');
+        
+    case 'q'
+        figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
+        
+    case 'g'
+        pushbutton5_Callback(handles.pushbutton5, eventdata, handles);
+        
+    case 'r'
+        ShowFrameOnAxis(handles); 
+        
+    case 'k' 
+        keyboard
+        
+end
+        
+
+% --- Executes on button press in pushbutton4.
+function pushbutton4_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Deconstruct saveables from handles
+settings = handles.settings;
+TMS = handles.TMS;
+tms = handles.tms;
+save(settings.files.outfile, 'settings', 'TMS', 'tms');
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Save dialogue
+answer = SaveDialogue;
+if strcmp(answer, 'Yes')
+    pushbutton4_Callback(handles.figure1, eventdata, handles);
+    disp('Saved!');
+end
+
+% Hint: delete(hObject) closes the figure
+delete(hObject);
+
+
+function edit1_Callback(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit1 as text
+%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+frame = str2double(get(hObject,'String'));
+
+if frame >= 1 && frame <= handles.settings.cframes
+    handles.settings.currentframe = frame;
+    ShowFrameOnAxis(handles);
+
+    % Update handles structure
+    guidata(hObject, handles);
+    
+    % Reset string inside edit box
+    handles.edit1.String = 'Go to Frame...';
+    
+else warning('Not a valid frame.');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton5.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Zoom in and find peaks
+[peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles);
+
+% Add peaks/valleys to popupmenus for callbacks
+handles.popupmenu1.UserData.peaks = peaks;
+handles.popupmenu1.UserData.peaksloc = peaksloc;
+handles.popupmenu2.UserData.valleys = valleys;
+handles.popupmenu2.UserData.valleysloc = valleysloc;
+
+% Update handles structure
+guidata(hObject, handles);
+
+handles.popupmenu1.String = {'All Peaks', peaks};
+handles.popupmenu2.String = {'All Valleys', valleys};
+
+
+% --- Executes on button press in pushbutton6.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+ShowFrameOnAxis(handles); 
+
+
+% --- Executes on selection change in popupmenu1.
+function popupmenu1_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+
+cPeaks = cellstr(get(handles.popupmenu1,'String'));
+cValleys = cellstr(get(handles.popupmenu2,'String'));
+
+peak = str2double(cPeaks{get(handles.popupmenu1,'Value')});
+valley = str2double(cValleys{get(handles.popupmenu2,'Value')});
+
+if isnan(peak)
+    peaksIndex = 1:length(handles.popupmenu1.UserData.peaks);
+else
+    [~,peaksIndex] = min(abs(handles.popupmenu1.UserData.peaks - peak));
+end
+if isnan(valley)
+    valleysIndex = 1:length(handles.popupmenu2.UserData.valleys);
+else
+    [~,valleysIndex] = min(abs(handles.popupmenu2.UserData.valleys - valley));
+end
+[currentPeaks, currentValleys] = PlotPeak(handles, peaksIndex, valleysIndex);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu2.
+function popupmenu2_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu2
+
+cPeaks = cellstr(get(handles.popupmenu1,'String'));
+cValleys = cellstr(get(handles.popupmenu2,'String'));
+
+peak = str2double(cPeaks{get(handles.popupmenu1,'Value')});
+valley = str2double(cValleys{get(handles.popupmenu2,'Value')});
+
+if isnan(peak)
+    peaksIndex = 1:length(handles.popupmenu1.UserData.peaks);
+else
+    [~,peaksIndex] = min(abs(handles.popupmenu1.UserData.peaks - peak));
+end
+if isnan(valley)
+    valleysIndex = 1:length(handles.popupmenu2.UserData.valleys);
+else
+    [~,valleysIndex] = min(abs(handles.popupmenu2.UserData.valleys - valley));
+end
+[currentPeaks, currentValleys] = PlotPeak(handles, peaksIndex, valleysIndex);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
