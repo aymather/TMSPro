@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 09-Mar-2019 20:53:44
+% Last Modified by GUIDE v2.5 12-Mar-2019 17:50:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -52,8 +52,17 @@ function TMSPro_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to TMSPro (see VARARGIN)
 
+% Init logo
+[img, map, alpha] = imread('logo_transparent.png');
+axes(handles.axes2);
+imshow(img, map);
+handles.axes2.Children.AlphaData = alpha;
+
 % Initialize
-[settings, TMS, tms] = TMSPro_init;
+[handles.settings, handles.TMS, handles.tms] = TMSPro_init;
+
+% Show current working frame
+ShowFrameOnAxis(handles);
 
 % Choose default command line output for TMSPro
 handles.output = hObject;
@@ -74,3 +83,32 @@ function varargout = TMSPro_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+
+
+% --- Executes on button press in pushbutton2.
+function pushbutton2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if handles.settings.currentframe - 1 == 0
+    disp('You are at the beginning of your data set.');
+else handles.settings.currentframe = handles.settings.currentframe - 1;
+end
+ShowFrameOnAxis(handles);
+
+% Update handles structure
+guidata(hObject, handles);
+
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if handles.settings.currentframe + 1 <= handles.settings.cframes
+    handles.settings.currentframe = handles.settings.currentframe + 1;
+else disp('You have reached the end of your data set!');
+end
+ShowFrameOnAxis(handles);
+
+% Update handles structure
+guidata(hObject, handles);

@@ -68,7 +68,7 @@ for it = 1:tmstrials
     thisdata = tms.data.values(:,1,it);
     baselinesamples = baseline*srate/1000;
     TMS(it,Tbase) = double(rms(thisdata(1:baselinesamples)));
-
+    
     % MEP
     % find artifact onset
     srate = 1/tmsdata.interval;
@@ -118,7 +118,6 @@ if check == 0
         % make
         figure(h); clf; hold on;
         title([ 'Trial ' num2str(it)]);
-        keyboard
 
         % line
         l = line(1:length(tms.data.values(:,1,it)),tms.data.values(:,1,it),'LineWidth',1,'Color',[0 0 0.5]);

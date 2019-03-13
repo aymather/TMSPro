@@ -5,6 +5,7 @@ function [settings, TMS, tms] = TMSPro_init
     settings.plotlimits = [1 500]; % limits
     settings.artfactor = 2.5; % multiplicator for artifact identification (artfactor * max(baselinepoint));
     settings.maxmeplength = 75; % in ms
+    settings.currentframe = 1; % init current frame
     
     % Matrix columns
     settings.id.Tnum = 1;
@@ -24,18 +25,20 @@ function [settings, TMS, tms] = TMSPro_init
     settings.id.Trej_manual = 15;
     
     % Reasons for rejections
-    settings.rej.nopulse = 'No pulse';
-    settings.rej.basenoisy = 'Baseline too noisy (>0.01)';
-    settings.rej.nomep = 'NoMEP (<0.01)';
-    settings.rej.mepmaxneg = 'MEP maxed out (negatively)';
-    settings.rej.mepmaxpos = 'MEP maxed out (positively)';
-    settings.rej.manual = 'Manual';
+    settings.rejreasons = { ...
+        'No pulse', ... % i.e. no artifact found
+        'Baseline too noisy (>0.01)', ...
+        'No MEP (< 0.01)', ...
+        'MEP maxed out (negatively)', ...
+        'MEP maxed out (postively)',...
+        'Manual' ...
+        };
     
     % Open initialization dialogue
     files = TMSPro_CreateProjGUI;
     
     % Define your project parameters
-    if isfield(files, 'inputFile') || isfield(files, 'outputFile')
+    if isfield(files, 'inputFile') && isfield(files, 'outputFile')
         
         % get input and open file
         settings.files.infile = files.inputFile;
@@ -79,7 +82,7 @@ function [settings, TMS, tms] = TMSPro_init
             % MEP
             % find artifact onset
             if settings.triggermethod == -999
-                artonset = find(abs(thisdata) > max(thisdata(1:baselinesamples))*settings.artfactor,1,'first');
+                artonset = find(abs(thisdata) > min(thisdata(1:baselinesamples))*settings.artfactor,1,'first');
             else artonset = settings.triggermethod*settings.srate/1000;
             end
 
