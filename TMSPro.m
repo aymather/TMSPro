@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 13-Mar-2019 16:33:47
+% Last Modified by GUIDE v2.5 14-Mar-2019 11:57:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,6 +51,9 @@ function TMSPro_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to TMSPro (see VARARGIN)
+
+% Add folder and subfolders to path
+addpath(genpath(fileparts(which('TMSPro.m'))));
 
 % Init logo
 [img, map, alpha] = imread('logo_transparent.png');
@@ -142,6 +145,15 @@ switch eventdata.Key
         
     case 'r'
         ShowFrameOnAxis(handles); 
+        
+    case 'a'
+        pushbutton10_Callback(handles.pushbutton10, eventdata, handles);
+        
+    case 'c'
+        pushbutton8_Callback(handles.pushbutton8, eventdata, handles);
+        
+    case 'v'
+        pushbutton12_Callback(handles.pushbutton12, eventdata, handles);
         
     case 'k' 
         keyboard
@@ -304,3 +316,67 @@ function popupmenu2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+PlotCurrentRecordedAmplitude(handles);
+
+
+% --- Executes on button press in pushbutton10.
+function pushbutton10_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+set(handles.popupmenu1,'Value',1);
+set(handles.popupmenu2,'Value',1);
+popupmenu1_Callback(handles.popupmenu1, eventdata, handles);
+popupmenu2_Callback(handles.popupmenu2, eventdata, handles);
+
+
+% --- Executes on button press in pushbutton12.
+function pushbutton12_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get current selected peak/valley
+cPeaks = cellstr(get(handles.popupmenu1,'String'));
+cValleys = cellstr(get(handles.popupmenu2,'String'));
+peak = str2double(cPeaks{get(handles.popupmenu1,'Value')});
+valley = str2double(cValleys{get(handles.popupmenu2,'Value')});
+
+% Check inputs for correct format
+if ~isnan(peak) && ~isnan(valley)
+    
+   % Make sure they want to make changes
+   answer = SetNewAmpDialogue(peak,valley);
+   if strcmp(answer, 'Yes')
+
+       handles.TMS(handles.settings.currentframe,handles.settings.id.Tmax) = peak;
+       handles.TMS(handles.settings.currentframe,handles.settings.id.Tmin) = valley;
+
+       % Update handles structure
+       guidata(hObject, handles);
+
+       % Save
+       pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
+       
+       % Go back and show frame
+       ShowFrameOnAxis(handles);
+
+   end
+end
+    
+    
+    
+    
+    
+    
+    
+    
+    

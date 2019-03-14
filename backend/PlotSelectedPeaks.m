@@ -16,12 +16,13 @@ function [currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex,
         title({['Trial ' num2str(handles.settings.currentframe) ', Amplitude: ' num2str(handles.TMS(handles.settings.currentframe,handles.settings.id.Tmep)) ' mV. \color[rgb]{0 0.5 0}accepted' ];''});
     end
     
+    % Plot peaks markers
     plot(handles.popupmenu1.UserData.peaksloc(peaksIndex), handles.popupmenu1.UserData.peaks(peaksIndex), '^r');
     plot(handles.popupmenu2.UserData.valleysloc(valleysIndex), handles.popupmenu2.UserData.valleys(valleysIndex), 'vg');
     
     % Display amplitude value next to each peak / valley
     for it = peaksIndex
-        x = text(handles.popupmenu1.UserData.peaksloc(it), handles.popupmenu1.UserData.peaks(it)-.01, num2str(handles.popupmenu1.UserData.peaks(it)));
+        text(handles.popupmenu1.UserData.peaksloc(it), handles.popupmenu1.UserData.peaks(it)-.01, num2str(handles.popupmenu1.UserData.peaks(it)));
     end
     for it = valleysIndex
         text( handles.popupmenu2.UserData.valleysloc(it), handles.popupmenu2.UserData.valleys(it)-.01, num2str(handles.popupmenu2.UserData.valleys(it)));
