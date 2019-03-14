@@ -1,0 +1,11 @@
+function PlotCurrentRecordedAmplitude(handles)
+
+
+    
+
+
+
+
+
+
+end

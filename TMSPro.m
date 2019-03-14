@@ -263,23 +263,8 @@ function popupmenu1_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu1
 
-cPeaks = cellstr(get(handles.popupmenu1,'String'));
-cValleys = cellstr(get(handles.popupmenu2,'String'));
-
-peak = str2double(cPeaks{get(handles.popupmenu1,'Value')});
-valley = str2double(cValleys{get(handles.popupmenu2,'Value')});
-
-if isnan(peak)
-    peaksIndex = 1:length(handles.popupmenu1.UserData.peaks);
-else
-    [~,peaksIndex] = min(abs(handles.popupmenu1.UserData.peaks - peak));
-end
-if isnan(valley)
-    valleysIndex = 1:length(handles.popupmenu2.UserData.valleys);
-else
-    [~,valleysIndex] = min(abs(handles.popupmenu2.UserData.valleys - valley));
-end
-[currentPeaks, currentValleys] = PlotPeak(handles, peaksIndex, valleysIndex);
+[peaksIndex, valleysIndex] = GetSelectedPeaksIndex(handles);
+[currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex, valleysIndex);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -304,23 +289,8 @@ function popupmenu2_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu2
 
-cPeaks = cellstr(get(handles.popupmenu1,'String'));
-cValleys = cellstr(get(handles.popupmenu2,'String'));
-
-peak = str2double(cPeaks{get(handles.popupmenu1,'Value')});
-valley = str2double(cValleys{get(handles.popupmenu2,'Value')});
-
-if isnan(peak)
-    peaksIndex = 1:length(handles.popupmenu1.UserData.peaks);
-else
-    [~,peaksIndex] = min(abs(handles.popupmenu1.UserData.peaks - peak));
-end
-if isnan(valley)
-    valleysIndex = 1:length(handles.popupmenu2.UserData.valleys);
-else
-    [~,valleysIndex] = min(abs(handles.popupmenu2.UserData.valleys - valley));
-end
-[currentPeaks, currentValleys] = PlotPeak(handles, peaksIndex, valleysIndex);
+[peaksIndex, valleysIndex] = GetSelectedPeaksIndex(handles);
+[currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex, valleysIndex);
 
 
 % --- Executes during object creation, after setting all properties.
