@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 14-Mar-2019 11:57:16
+% Last Modified by GUIDE v2.5 14-Mar-2019 13:53:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -60,6 +60,9 @@ addpath(genpath(fileparts(which('TMSPro.m'))));
 axes(handles.axes2);
 imshow(img, map);
 handles.axes2.Children.AlphaData = alpha;
+
+% Turn off extra buttons
+ToggleButtonDisplay(handles,0);
 
 % Initialize
 [handles.settings, handles.TMS, handles.tms] = TMSPro_init;
@@ -144,16 +147,25 @@ switch eventdata.Key
         pushbutton5_Callback(handles.pushbutton5, eventdata, handles);
         
     case 'r'
-        ShowFrameOnAxis(handles); 
+        pushbutton7_Callback(handles.pushbutton7, eventdata, handles); 
         
     case 'a'
-        pushbutton10_Callback(handles.pushbutton10, eventdata, handles);
+        if ToggleButtonDisplay(handles)
+            pushbutton10_Callback(handles.pushbutton10, eventdata, handles);
+        end
         
     case 'c'
-        pushbutton8_Callback(handles.pushbutton8, eventdata, handles);
+        if ToggleButtonDisplay(handles)
+            pushbutton8_Callback(handles.pushbutton8, eventdata, handles);
+        end
         
     case 'v'
-        pushbutton12_Callback(handles.pushbutton12, eventdata, handles);
+        if ToggleButtonDisplay(handles)
+            pushbutton12_Callback(handles.pushbutton12, eventdata, handles);
+        end
+        
+    case 'x'
+        pushbutton13_Callback(handles.pushbutton13, eventdata, handles);
         
     case 'k' 
         keyboard
@@ -233,6 +245,9 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Toggle extra buttons on
+ToggleButtonDisplay(handles,1);
+
 % Zoom in and find peaks
 [peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles);
 
@@ -263,6 +278,11 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Toggle buttons back off
+ToggleButtonDisplay(handles,0);
+
+% Show current frame on axis
 ShowFrameOnAxis(handles); 
 
 
@@ -362,6 +382,9 @@ if ~isnan(peak) && ~isnan(valley)
 
        % Update handles structure
        guidata(hObject, handles);
+       
+       % Hide buttons again
+       ToggleButtonDisplay(handles,0);
 
        % Save
        pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
@@ -373,10 +396,28 @@ if ~isnan(peak) && ~isnan(valley)
 end
     
     
+% --- Executes on button press in pushbutton13.
+function pushbutton13_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+currentTrial = handles.settings.currentframe;
+answer = RejectionConfirmationDialogue(currentTrial);
+if strcmp(answer, 'Yes')
     
-    
-    
-    
-    
-    
-    
+   % Set to TMS matrix
+   handles.TMS(currentTrial, handles.settings.id.Trej_manual) = 1;
+   
+   % Set buttons off again
+   ToggleButtonDisplay(handles,0);
+   
+   % Update handles structure
+   guidata(hObject, handles);
+   
+   % Save
+   pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
+   
+   % Go back and show frame
+   ShowFrameOnAxis(handles);
+   
+end

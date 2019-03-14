@@ -24,6 +24,9 @@ function [settings, TMS, tms] = TMSPro_init
     settings.id.Trej_maxex = 14;
     settings.id.Trej_manual = 15;
     
+    % Get all rejections function handle
+    settings.manualrejhandle = @(TMS, settings) find(TMS(:,settings.id.Trej_manual) == 1);
+    
     % Reasons for rejections
     settings.rejreasons = { ...
         'No pulse', ... % i.e. no artifact found
