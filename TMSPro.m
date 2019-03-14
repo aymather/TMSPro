@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 14-Mar-2019 13:53:35
+% Last Modified by GUIDE v2.5 14-Mar-2019 15:08:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -421,3 +421,13 @@ if strcmp(answer, 'Yes')
    ShowFrameOnAxis(handles);
    
 end
+
+
+% --- Executes on button press in pushbutton14.
+function pushbutton14_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+rej = handles.settings.manualrejhandle(handles.TMS, handles.settings);
+disp(rej);
