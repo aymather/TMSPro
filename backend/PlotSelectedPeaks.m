@@ -1,7 +1,9 @@
 function [currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex, valleysIndex)
     
     % Extract data
-    raw = handles.tms.data.values(1:handles.settings.baseline,1,handles.settings.currentframe);
+    onset = handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset) + handles.settings.artifactlength;
+    offset = handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset);
+    raw = handles.tms.data.values(onset : offset,1,handles.settings.currentframe);
     
     % Plot on axes
     axes(handles.axes1); cla;

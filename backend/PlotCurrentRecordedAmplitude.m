@@ -7,7 +7,9 @@ function PlotCurrentRecordedAmplitude(handles)
     Tmin = handles.TMS(handles.settings.currentframe, handles.settings.id.Tmin);
     
     % Extract data
-    raw = handles.tms.data.values(1:handles.settings.baseline,1,handles.settings.currentframe);
+    onset = handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset) + handles.settings.artifactlength;
+    offset = handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset);
+    raw = handles.tms.data.values(onset : offset,1,handles.settings.currentframe);
     
     % Get the X coordinates
     [~,TmaxX] = min(abs(raw - Tmax));

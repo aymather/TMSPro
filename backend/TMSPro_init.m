@@ -1,11 +1,15 @@
 function [settings, TMS, tms] = TMSPro_init
 
+    % Open initialization dialogue
+    data = TMSPro_CreateProjGUI;
+
     % General settings
-    settings.baseline = 90; % Baseline begins @ 90
-    settings.plotlimits = [1 500]; % limits
-    settings.artfactor = 2.5; % multiplicator for artifact identification (artfactor * max(baselinepoint));
-    settings.maxmeplength = 75; % in ms
+    settings.baseline = data.baselinelength; % Baseline begins @ 90
+    settings.plotlimits = data.plotlimits; % limits
+    settings.artfactor = data.artifactfactor; % multiplicator for artifact identification (artfactor * max(baselinepoint));
+    settings.maxmeplength = data.maxmeplength; % in ms
     settings.currentframe = 1; % init current frame
+    settings.artifactlength = data.artifactlength; % distance between peak of artifact and beginning of MEP
     
     % Matrix columns
     settings.id.Tnum = 1;
@@ -37,15 +41,12 @@ function [settings, TMS, tms] = TMSPro_init
         'Manual' ...
         };
     
-    % Open initialization dialogue
-    files = TMSPro_CreateProjGUI;
-    
     % Define your project parameters
-    if isfield(files, 'inputFile') && isfield(files, 'outputFile')
+    if isfield(data, 'inputFile') && isfield(data, 'outputFile')
         
         % get input and open file
-        settings.files.infile = files.inputFile;
-        settings.files.outfile = files.outputFile;
+        settings.files.infile = data.inputFile;
+        settings.files.outfile = data.outputFile;
         load(settings.files.infile);
 
         % make variable names
@@ -85,7 +86,7 @@ function [settings, TMS, tms] = TMSPro_init
             % MEP
             % find artifact onset
             if settings.triggermethod == -999
-                artonset = find(abs(thisdata) > min(thisdata(1:baselinesamples))*settings.artfactor,1,'first');
+                artonset = find(abs(thisdata) > max(thisdata(1:baselinesamples))*settings.artfactor,1,'first');
             else artonset = settings.triggermethod*settings.srate/1000;
             end
 
@@ -120,7 +121,7 @@ function [settings, TMS, tms] = TMSPro_init
         % Save project to .mat file
         save(settings.files.outfile, 'settings', 'tms', 'TMS');
         
-    elseif isfield(files, 'ExistingFile')
+    elseif isfield(data, 'ExistingFile')
         
         % Load in existing data
         load(files.ExistingFile, 'settings', 'TMS', 'tms');

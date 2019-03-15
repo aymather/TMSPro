@@ -1,11 +1,13 @@
 function [peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles)
 
     % Extract data
-    raw = handles.tms.data.values(1:handles.settings.baseline,1,handles.settings.currentframe);
+    onset = handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset) + handles.settings.artifactlength;
+    offset = handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset);
+    raw = handles.tms.data.values(onset : offset,1,handles.settings.currentframe);
     
     % Get mean and average out data
     m = mean(raw);
-    adj = m + .005;
+    adj = m;
 
     % Get Peaks
     [peaks, peaksloc] = findpeaks(raw, 'MinPeakHeight', adj);

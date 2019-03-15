@@ -22,7 +22,7 @@ function varargout = TMSPro_CreateProjGUI(varargin)
 
 % Edit the above text to modify the response to help TMSPro_CreateProjGUI
 
-% Last Modified by GUIDE v2.5 11-Mar-2019 19:23:12
+% Last Modified by GUIDE v2.5 15-Mar-2019 12:55:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,9 @@ function TMSPro_CreateProjGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 axes(handles.axes1);
 imshow(img, map);
 handles.axes1.Children.AlphaData = alpha;
+
+% Create default settings
+SetDefaultSettings(handles);
 
 % Choose default command line output for TMSPro_CreateProjGUI
 handles.output = hObject;
@@ -186,3 +189,183 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 uiresume(handles.figure1);
+
+
+function edit5_Callback(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit5 as text
+%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text33.String = num2str(var);
+    handles.output.UserData.ArtifactFactor = var;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+function edit4_Callback(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit4 as text
+%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+var = get(hObject, 'String');
+var = var{1};
+split = strfind(var,'-');
+min = str2double(var(1:split-1));
+max = str2double(var(split+1:end));
+if CheckPlotLimits(min, max)
+    handles.text31.String = var;
+    handles.output.UserData.plotlimits = [min max];
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else 
+    warn = sprintf('Invalid inputs. Setting must be two integers separated by a dash. \nExamples: 1-500, 5-100, 60-90');
+    warning(warn);
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit3_Callback(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit3 as text
+%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text30.String = num2str(var);
+    handles.output.UserData.baselinelength = var;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text29.String = num2str(var);
+    handles.output.UserData.maxmeplength = var;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit1_Callback(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit1 as text
+%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text28.String = num2str(var);
+    handles.output.UserData.artifactlength = var;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+SetDefaultSettings(handles);
+
+% Update handles structure
+guidata(hObject, handles);

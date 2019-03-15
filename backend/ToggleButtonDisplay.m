@@ -12,7 +12,12 @@ function status = ToggleButtonDisplay(handles, bool)
         
     else
         
-        status = get(handles.popupmenu1,'visible');
+        s = get(handles.popupmenu1,'visible');
+        if strcmp(s, 'off')
+            status = 0;
+        else
+            status = 1;
+        end
         
     end
     
