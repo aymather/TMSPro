@@ -22,7 +22,7 @@ function varargout = TMSPro_CreateProjGUI(varargin)
 
 % Edit the above text to modify the response to help TMSPro_CreateProjGUI
 
-% Last Modified by GUIDE v2.5 15-Mar-2019 12:55:15
+% Last Modified by GUIDE v2.5 16-Mar-2019 15:28:49
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,11 +58,11 @@ axes(handles.axes1);
 imshow(img, map);
 handles.axes1.Children.AlphaData = alpha;
 
-% Create default settings
-SetDefaultSettings(handles);
-
 % Choose default command line output for TMSPro_CreateProjGUI
 handles.output = hObject;
+
+% Create default settings
+SetDefaultSettings(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -232,18 +232,18 @@ function edit4_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of edit4 as a double
 var = get(hObject, 'String');
 var = var{1};
-split = strfind(var,'-');
+split = strfind(var,':');
 min = str2double(var(1:split-1));
 max = str2double(var(split+1:end));
-if CheckPlotLimits(min, max)
+if CheckRange(min, max)
     handles.text31.String = var;
-    handles.output.UserData.plotlimits = [min max];
+    handles.output.UserData.plotlimitsx = [min max];
     
     % Update handles structure
     guidata(hObject, handles);
     
 else 
-    warn = sprintf('Invalid inputs. Setting must be two integers separated by a dash. \nExamples: 1-500, 5-100, 60-90');
+    warn = sprintf('Invalid inputs. Setting must be two integers separated by a colon. \nExamples: 1:500, 5:100, 60:90');
     warning(warn);
 end
 
@@ -369,3 +369,42 @@ SetDefaultSettings(handles);
 
 % Update handles structure
 guidata(hObject, handles);
+
+
+
+function edit6_Callback(hObject, eventdata, handles)
+% hObject    handle to edit6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit6 as text
+%        str2double(get(hObject,'String')) returns contents of edit6 as a double
+var = get(hObject, 'String');
+var = var{1};
+split = strfind(var,':');
+min = str2double(var(1:split-1));
+max = str2double(var(split+1:end));
+if CheckRange(min, max)
+    handles.text34.String = var;
+    handles.output.UserData.plotlimitsy = [min max];
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else 
+    warn = sprintf('Invalid inputs. Setting must be two integers separated by a colon. \nExamples: 1:500, 5:100, 60:90');
+    warning(warn);
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit6_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

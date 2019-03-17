@@ -3,14 +3,6 @@ function [settings, TMS, tms] = TMSPro_init
     % Open initialization dialogue
     data = TMSPro_CreateProjGUI;
 
-    % General settings
-    settings.baseline = data.baselinelength; % Baseline begins @ 90
-    settings.plotlimits = data.plotlimits; % limits
-    settings.artfactor = data.artifactfactor; % multiplicator for artifact identification (artfactor * max(baselinepoint));
-    settings.maxmeplength = data.maxmeplength; % in ms
-    settings.currentframe = 1; % init current frame
-    settings.artifactlength = data.artifactlength; % distance between peak of artifact and beginning of MEP
-    
     % Matrix columns
     settings.id.Tnum = 1;
     settings.id.Ttrial = 2;
@@ -28,8 +20,8 @@ function [settings, TMS, tms] = TMSPro_init
     settings.id.Trej_maxex = 14;
     settings.id.Trej_manual = 15;
     
-    % Get all rejections function handle
-    settings.manualrejhandle = @(TMS, settings) find(TMS(:,settings.id.Trej_manual) == 1);
+    % Get all trials that match a rejection criteria
+    settings.filter_by = @(TMS, col) find(TMS(:,col) == 1);
     
     % Reasons for rejections
     settings.rejreasons = { ...
@@ -59,6 +51,15 @@ function [settings, TMS, tms] = TMSPro_init
         
         % Sample rate
         settings.srate = 1/tms.data.interval;
+        
+        % General settings
+        settings.baseline = data.baselinelength; % Baseline begins @ 90
+        settings.plotlimitsx = data.plotlimitsx; % limits
+        settings.artfactor = data.artifactfactor; % multiplicator for artifact identification (artfactor * max(baselinepoint));
+        settings.maxmeplength = data.maxmeplength; % in ms
+        settings.currentframe = 1; % init current frame
+        settings.artifactlength = data.artifactlength; % distance between peak of artifact and beginning of MEP
+        settings.plotlimitsy = data.plotlimitsy; % vertical plot limits on normal plotting
         
         % Number of frames
         settings.cframes = tms.data.frames;
@@ -124,7 +125,7 @@ function [settings, TMS, tms] = TMSPro_init
     elseif isfield(data, 'ExistingFile')
         
         % Load in existing data
-        load(files.ExistingFile, 'settings', 'TMS', 'tms');
+        load(data.ExistingFile, 'settings', 'TMS', 'tms');
         
     end
 

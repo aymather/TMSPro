@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 14-Mar-2019 15:08:54
+% Last Modified by GUIDE v2.5 16-Mar-2019 17:55:51
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -70,6 +70,9 @@ ToggleButtonDisplay(handles,0);
 % Show current working frame
 ShowFrameOnAxis(handles);
 
+% Create a place for a temporary filtered matrix
+handles.TMS_temp = [];
+
 % Choose default command line output for TMSPro
 handles.output = hObject;
 
@@ -84,8 +87,12 @@ function varargout = TMSPro_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Get default command line output from handles structure
-varargout{1} = handles.output;
+if isfield(handles, 'output')
+    
+    % Get default command line output from handles structure
+    varargout{1} = handles.output;
+    
+end
 
 
 % --- Executes on button press in pushbutton2.
@@ -402,25 +409,34 @@ function pushbutton13_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 currentTrial = handles.settings.currentframe;
-answer = RejectionConfirmationDialogue(currentTrial);
-if strcmp(answer, 'Yes')
+if handles.pushbutton13.UserData
     
-   % Set to TMS matrix
-   handles.TMS(currentTrial, handles.settings.id.Trej_manual) = 1;
-   
-   % Set buttons off again
-   ToggleButtonDisplay(handles,0);
-   
-   % Update handles structure
-   guidata(hObject, handles);
-   
-   % Save
-   pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
-   
-   % Go back and show frame
-   ShowFrameOnAxis(handles);
-   
+    answer = RejectionConfirmationDialogue(currentTrial);
+    if strcmp(answer, 'Yes')
+
+       % Set to TMS matrix
+       handles.TMS(currentTrial, handles.settings.id.Trej_manual) = 1;
+
+    end
+    
+else
+    
+    % Reset TMS matrix to 0
+    handles.TMS(currentTrial, handles.settings.id.Trej_nopulse:handles.settings.id.Trej_manual) = 0;
+    
 end
+
+% Set buttons off again
+ToggleButtonDisplay(handles,0);
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Save
+pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
+
+% Go back and show frame
+ShowFrameOnAxis(handles);
 
 
 % --- Executes on button press in pushbutton14.
@@ -429,5 +445,54 @@ function pushbutton14_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-rej = handles.settings.manualrejhandle(handles.TMS, handles.settings);
+rej = handles.settings.filter_by(handles.TMS, handles.settings.id.Trej_manual);
 disp(rej);
+
+
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+
+var = get(hObject, 'String');
+split = strfind(var,':');
+min = str2double(var(1:split-1));
+max = str2double(var(split+1:end));
+if CheckRange(min, max)
+    
+    % Set new MEP window in TMS matrix
+    handles.TMS(handles.settings.currentframe, handles.settings.id.Taonset) = min - handles.settings.artifactlength;
+    handles.TMS(handles.settings.currentframe, handles.settings.id.Tmoffset) = max;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+    % Save
+    pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
+    
+    % Reset string on edit2
+    handles.edit2.String = 'Min:Max';
+    
+else 
+    warn = sprintf('Invalid inputs. Setting must be two integers separated by a colon. \nExamples: 1:500, 5:100, 60:90');
+    warning(warn);
+end
+
+% Re-display the current frame with new MEP offset
+ShowFrameOnAxis(handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function edit2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

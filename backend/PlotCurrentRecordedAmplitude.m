@@ -17,13 +17,16 @@ function PlotCurrentRecordedAmplitude(handles)
     
     % Plot on axes
     axes(handles.axes1); cla;
-    plot(raw, '-b'); hold on;
+    l = plot(raw, '-b'); hold on;
     
     % Title
     rejs = handles.TMS(handles.settings.currentframe,handles.settings.id.Trej_nopulse:handles.settings.id.Trej_maxex);
     if sum(rejs) > 0
         set(l,'Color',[1 0 0]);
         title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}REJECTED: ']; handles.settings.rejreasons{find(rejs,1,'first')}});
+    elseif handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_manual)
+        set(l,'Color',[1 0 0]);
+        title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}Manually Rejected']; ''});
     else
         title({['Trial ' num2str(handles.settings.currentframe) ', Amplitude: ' num2str(handles.TMS(handles.settings.currentframe,handles.settings.id.Tmep)) ' mV. \color[rgb]{0 0.5 0}accepted' ];''});
     end
