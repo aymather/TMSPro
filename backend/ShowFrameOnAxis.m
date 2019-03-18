@@ -1,12 +1,20 @@
 function ShowFrameOnAxis(handles)
 
     % Handle reject button
-    if any(handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_nopulse:handles.settings.id.Trej_manual))
+    if any(handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_nopulse:handles.settings.id.Trej_other))
         handles.pushbutton13.String = 'Unreject ( x )';
         handles.pushbutton13.UserData = 0;
+        
+        % Toggle Set new MEP min/max button
+        set(handles.text4, 'visible', 'off');
+        set(handles.edit2, 'visible', 'off');
     else
         handles.pushbutton13.String = 'Reject ( x )';
         handles.pushbutton13.UserData = 1;
+        
+        % Toggle Set new MEP min/max button
+        set(handles.text4, 'visible', 'on');
+        set(handles.edit2, 'visible', 'on');
     end
 
     % Grab the main axes
@@ -23,7 +31,7 @@ function ShowFrameOnAxis(handles)
     if sum(rejs) > 0
         set(l,'Color',[1 0 0]);
         title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}REJECTED: ']; handles.settings.rejreasons{find(rejs,1,'first')}});
-    elseif handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_manual)
+    elseif handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_other)
         set(l,'Color',[1 0 0]);
         title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}Manually Rejected']; ''});
     else

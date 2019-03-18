@@ -22,7 +22,7 @@ function varargout = RejectionConfirmationDialogue(varargin)
 
 % Edit the above text to modify the response to help RejectionConfirmationDialogue
 
-% Last Modified by GUIDE v2.5 14-Mar-2019 14:01:10
+% Last Modified by GUIDE v2.5 17-Mar-2019 17:17:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -191,18 +191,91 @@ if isequal(get(hObject,'CurrentKey'),'return')
 end    
 
 
-% --- Executes on key press with focus on figure1 or any of its controls.
-function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.FIGURE)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+handles.output = get(hObject,'String');
 
-switch eventdata.Key
-    
-    case 'return'
-        pushbutton1_Callback(handles.pushbutton1, eventdata, handles);
-        
-end
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);
+
+
+% --- Executes on button press in pushbutton4.
+function pushbutton4_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.output = get(hObject,'String');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);
+
+
+% --- Executes on button press in pushbutton5.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.output = get(hObject,'String');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);
+
+
+% --- Executes on button press in pushbutton6.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.output = get(hObject,'String');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.output = get(hObject,'String');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.output = get(hObject,'String');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Use UIRESUME instead of delete because the OutputFcn needs
+% to get the updated handles structure.
+uiresume(handles.figure1);

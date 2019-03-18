@@ -1,46 +1,44 @@
-function [settings, TMS, tms] = TMSPro_init
+function [settings, TMS, tms] = TMSPro_init(data)
 
-    % Open initialization dialogue
-    data = TMSPro_CreateProjGUI;
-
-    % Matrix columns
-    settings.id.Tnum = 1;
-    settings.id.Ttrial = 2;
-    settings.id.Tacc = 3;
-    settings.id.Tbase = 4;
-    settings.id.Taonset = 5;
-    settings.id.Tmoffset = 6;
-    settings.id.Tmin = 7;
-    settings.id.Tmax = 8;
-    settings.id.Tmep = 9;
-    settings.id.Trej_nopulse = 10;
-    settings.id.Trej_absbase = 11;
-    settings.id.Trej_nomep = 12;
-    settings.id.Trej_minex = 13;
-    settings.id.Trej_maxex = 14;
-    settings.id.Trej_manual = 15;
-    
-    % Get all trials that match a rejection criteria
-    settings.filter_by = @(TMS, col) find(TMS(:,col) == 1);
-    
-    % Reasons for rejections
-    settings.rejreasons = { ...
-        'No pulse', ... % i.e. no artifact found
-        'Baseline too noisy (>0.01)', ...
-        'No MEP (< 0.01)', ...
-        'MEP maxed out (negatively)', ...
-        'MEP maxed out (postively)',...
-        'Manual' ...
-        };
-    
-    % Define your project parameters
+     % Define your project parameters
     if isfield(data, 'inputFile') && isfield(data, 'outputFile')
-        
+
+        % Matrix columns
+        settings.id.Tnum = 1;
+        settings.id.Ttrial = 2;
+        settings.id.Tacc = 3;
+        settings.id.Tbase = 4;
+        settings.id.Taonset = 5;
+        settings.id.Tmoffset = 6;
+        settings.id.Tmin = 7;
+        settings.id.Tmax = 8;
+        settings.id.Tmep = 9;
+        settings.id.Trej_nopulse = 10;
+        settings.id.Trej_absbase = 11;
+        settings.id.Trej_nomep = 12;
+        settings.id.Trej_minex = 13;
+        settings.id.Trej_maxex = 14;
+        settings.id.Trej_other = 15;
+
+        % Get all trials that match a rejection criteria
+        settings.filter_by = @(TMS, col) TMS(TMS(:,col) == 1,:);
+        settings.get_accepted = @(TMS, cols) TMS(~all(TMS(:,cols) == 0,2) == 0,:);
+
+        % Reasons for rejections
+        settings.rejreasons = { ...
+            'No Pulse', ... % i.e. no artifact found
+            'Baseline too noisy (>0.01)', ...
+            'No MEP (< 0.01)', ...
+            'MEP maxed out (negatively)', ...
+            'MEP maxed out (postively)',...
+            'Other' ...
+            };
+    
         % get input and open file
         settings.files.infile = data.inputFile;
         settings.files.outfile = data.outputFile;
         load(settings.files.infile);
-
+        
         % make variable names
         variables = whos;
         varnames = {variables(~cellfun(@isempty,strfind({variables.name},'S'))).name};
@@ -58,6 +56,7 @@ function [settings, TMS, tms] = TMSPro_init
         settings.artfactor = data.artifactfactor; % multiplicator for artifact identification (artfactor * max(baselinepoint));
         settings.maxmeplength = data.maxmeplength; % in ms
         settings.currentframe = 1; % init current frame
+        settings.countindex = 1; % for scrolling through filters
         settings.artifactlength = data.artifactlength; % distance between peak of artifact and beginning of MEP
         settings.plotlimitsy = data.plotlimitsy; % vertical plot limits on normal plotting
         

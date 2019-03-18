@@ -14,7 +14,7 @@ function [currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex,
     if sum(rejs) > 0
         set(l,'Color',[1 0 0]);
         title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}REJECTED: ']; handles.settings.rejreasons{find(rejs,1,'first')}});
-    elseif handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_manual)
+    elseif handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_other)
         set(l,'Color',[1 0 0]);
         title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}Manually Rejected']; ''});
     else

@@ -1,4 +1,4 @@
-function varargout = TMSPro_CreateProjGUI(varargin)
+function varargout = TMSPro(varargin)
 % TMSPRO_CREATEPROJGUI MATLAB code for TMSPro_CreateProjGUI.fig
 %      TMSPRO_CREATEPROJGUI, by itself, creates a new TMSPRO_CREATEPROJGUI or raises the existing
 %      singleton*.
@@ -45,7 +45,7 @@ end
 
 
 % --- Executes just before TMSPro_CreateProjGUI is made visible.
-function TMSPro_CreateProjGUI_OpeningFcn(hObject, eventdata, handles, varargin)
+function TMSPro_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -72,7 +72,7 @@ uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = TMSPro_CreateProjGUI_OutputFcn(hObject, eventdata, handles) 
+function varargout = TMSPro_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -84,6 +84,9 @@ if isstruct(handles)
 
     % Destroy GUI
     delete(handles.figure1);
+    
+    % Start up Main Stage
+    TMSPro_Main(handles.output.UserData);
 else
     varargout = {0};
 end

@@ -1,19 +1,19 @@
 function varargout = TMSPro(varargin)
-% TMSPRO MATLAB code for TMSPro.fig
+%TMSPRO MATLAB code file for TMSPro.fig
 %      TMSPRO, by itself, creates a new TMSPRO or raises the existing
 %      singleton*.
 %
 %      H = TMSPRO returns the handle to a new TMSPRO or the handle to
 %      the existing singleton*.
 %
-%      TMSPRO('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in TMSPRO.M with the given input arguments.
+%      TMSPRO('Property','Value',...) creates a new TMSPRO using the
+%      given property value pairs. Unrecognized properties are passed via
+%      varargin to TMSPro_OpeningFcn.  This calling syntax produces a
+%      warning when there is an existing singleton*.
 %
-%      TMSPRO('Property','Value',...) creates a new TMSPRO or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before TMSPro_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to TMSPro_OpeningFcn via varargin.
+%      TMSPRO('CALLBACK') and TMSPRO('CALLBACK',hObject,...) call the
+%      local function named CALLBACK in TMSPRO.M with the given input
+%      arguments.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 16-Mar-2019 17:55:51
+% Last Modified by GUIDE v2.5 17-Mar-2019 18:32:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -30,10 +30,10 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @TMSPro_OpeningFcn, ...
                    'gui_OutputFcn',  @TMSPro_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
+                   'gui_LayoutFcn',  [], ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
-    gui_State.gui_Callback = str2func(varargin{1});
+   gui_State.gui_Callback = str2func(varargin{1});
 end
 
 if nargout
@@ -44,40 +44,34 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before TMSPro is made visible.
+% --- Executes just before TMSPro_CreateProjGUI is made visible.
 function TMSPro_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to TMSPro (see VARARGIN)
+% varargin   command line arguments to TMSPro_CreateProjGUI (see VARARGIN)
 
 % Add folder and subfolders to path
 addpath(genpath(fileparts(which('TMSPro.m'))));
 
 % Init logo
 [img, map, alpha] = imread('logo_transparent.png');
-axes(handles.axes2);
+axes(handles.axes1);
 imshow(img, map);
-handles.axes2.Children.AlphaData = alpha;
+handles.axes1.Children.AlphaData = alpha;
 
-% Turn off extra buttons
-ToggleButtonDisplay(handles,0);
-
-% Initialize
-[handles.settings, handles.TMS, handles.tms] = TMSPro_init;
-
-% Show current working frame
-ShowFrameOnAxis(handles);
-
-% Create a place for a temporary filtered matrix
-handles.TMS_temp = [];
-
-% Choose default command line output for TMSPro
+% Choose default command line output for TMSPro_CreateProjGUI
 handles.output = hObject;
+
+% Create default settings
+SetDefaultSettings(handles);
 
 % Update handles structure
 guidata(hObject, handles);
+
+% UIWAIT makes TMSPro_Intro wait for user response (see UIRESUME)
+uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -87,12 +81,29 @@ function varargout = TMSPro_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-if isfield(handles, 'output')
-    
+if isstruct(handles)
     % Get default command line output from handles structure
-    varargout{1} = handles.output;
+    varargout{1} = handles.output.UserData;
+
+    % Destroy GUI
+    delete(handles.figure1);
     
+    % Start up Main Stage
+    TMSPro_Main(varargout);
+else
+    varargout = {0};
 end
+
+
+% --- Create New Project - Create button
+function pushbutton1_Callback(hObject, eventdata, handles)
+
+if isready(handles)
+    uiresume(handles.figure1);
+else
+    warn = sprintf('One or more fields are not correctly filled out.');
+    warning(warn);
+end 
 
 
 % --- Executes on button press in pushbutton2.
@@ -100,114 +111,227 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if handles.settings.currentframe - 1 == 0
-    disp('You are at the beginning of your data set.');
-else handles.settings.currentframe = handles.settings.currentframe - 1;
+[filen, filep] = uigetfile('*.mat'); % get file
+if all(filen ~= 0) || all(filep ~= 0)
+    ffile = fullfile(filep, filen); % get fullfile path so we can load from anywhere
+    handles.pushbutton2.String = filen; % display selected file to user
+    handles.pushbutton2.FontSize = 10;
+    handles.output.UserData.inputFile = ffile; % place fullfile into output data
+    handles.text12.ForegroundColor = [0 1 0]; % change color of status to green
+    handles.text12.String = char(hex2dec('2713')); % change status to 'checked'
+    if isready(handles)
+        handles.text14.ForegroundColor = [0 1 0]; % change color of status to green
+        handles.text14.String = char(hex2dec('2713')); % change status to 'checked'
+    else
+        handles.text14.ForegroundColor = [1 0 0];
+        handles.text14.String = 'X';
+    end
 end
-ShowFrameOnAxis(handles);
 
-% Update handles structure
-guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton3.
 function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if handles.settings.currentframe + 1 <= handles.settings.cframes
-    handles.settings.currentframe = handles.settings.currentframe + 1;
-else disp('You have reached the end of your data set!');
+[filen, filep] = uiputfile; % open dialogue
+[~,~,ext] = fileparts(filen); % get chosen filename's extension
+if strcmp(ext,'.mldatx'); filen = strrep(filen, '.mldatx', '.mat'); end % if no extension is given, make it a .mat file
+if all(filen ~= 0) || all(filep ~= 0)
+    ffile = fullfile(filep, filen);
+    if strcmp(ffile(end-3:end), '.mat')
+        handles.output.UserData.outputFile = ffile; % set output data
+        handles.pushbutton3.String = filen; % display file to user
+        handles.pushbutton3.FontSize = 10;
+        handles.text13.ForegroundColor = [0 1 0]; % change color of status to green
+        handles.text13.String = char(hex2dec('2713')); % change status to 'checked'
+    else
+        handles.output.UserData.outputFile = ffile;
+        handles.text14.ForegroundColor = [1 0 0];
+        handles.text14.String = 'X';
+        warn = sprintf('Make sure that your file ends with a .mat extension!');
+        warning(warn);
+    end
+    if isready(handles)
+        handles.text14.ForegroundColor = [0 1 0]; % change color of status to green
+        handles.text14.String = char(hex2dec('2713')); % change status to 'checked'
+    end
 end
-ShowFrameOnAxis(handles);
 
-% Update handles structure
-guidata(hObject, handles);
+% --- Executes during object creation, after setting all properties.
+function axes1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes1
 
 
-% --- Executes on key press with focus on figure1 or any of its controls.
-% Handles Keyboard Shortcuts
-function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.FIGURE)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% --- Executes on button press in pushbutton5.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[filen, filep] = uigetfile('*.mat');
+ffile = fullfile(filep, filen);
+if all(filen ~= 0) || all(filep ~= 0)
+    if checkExistingProject(ffile)
+        handles.pushbutton5.String = filen;
+        handles.pushbutton5.FontSize = 10;
+        handles.text23.ForegroundColor = [0 1 0];
+        handles.text23.String = char(hex2dec('2713'));
+        handles.text25.ForegroundColor = [0 1 0];
+        handles.text25.String = char(hex2dec('2713'));
+        handles.output.UserData.ExistingFile = ffile;
+    else
+        warn = sprintf('Something went wrong checking your existing file. \nDouble check that this is the file you worked with before.\n*.mat file must contain the following variables: settings, TMS, tms');
+        warning(warn);
+    end
+end
+
+% --- Executes on button press in pushbutton6.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+uiresume(handles.figure1);
+
+
+function edit5_Callback(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Handles keyboard shortcuts
-switch eventdata.Key
+% Hints: get(hObject,'String') returns contents of edit5 as text
+%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text33.String = num2str(var);
+    handles.output.UserData.ArtifactFactor = var;
     
-    case 'rightarrow'
-        pushbutton3_Callback(handles.pushbutton3, eventdata, handles);
-        
-    case 'leftarrow'
-        pushbutton2_Callback(handles.pushbutton2, eventdata, handles);
-        
-    case 's'
-        pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
-        disp('Saved!');
-        
-    case 'q'
-        figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
-        
-    case 'g'
-        pushbutton5_Callback(handles.pushbutton5, eventdata, handles);
-        
-    case 'r'
-        pushbutton7_Callback(handles.pushbutton7, eventdata, handles); 
-        
-    case 'a'
-        if ToggleButtonDisplay(handles)
-            pushbutton10_Callback(handles.pushbutton10, eventdata, handles);
-        end
-        
-    case 'c'
-        if ToggleButtonDisplay(handles)
-            pushbutton8_Callback(handles.pushbutton8, eventdata, handles);
-        end
-        
-    case 'v'
-        if ToggleButtonDisplay(handles)
-            pushbutton12_Callback(handles.pushbutton12, eventdata, handles);
-        end
-        
-    case 'x'
-        pushbutton13_Callback(handles.pushbutton13, eventdata, handles);
-        
-    case 'k' 
-        keyboard
-        
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
 end
-        
 
-% --- Executes on button press in pushbutton4.
-function pushbutton4_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton4 (see GCBO)
+
+% --- Executes during object creation, after setting all properties.
+function edit5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+function edit4_Callback(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Deconstruct saveables from handles
-settings = handles.settings;
-TMS = handles.TMS;
-tms = handles.tms;
-save(settings.files.outfile, 'settings', 'TMS', 'tms');
+% Hints: get(hObject,'String') returns contents of edit4 as text
+%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+var = get(hObject, 'String');
+var = var{1};
+split = strfind(var,':');
+min = str2double(var(1:split-1));
+max = str2double(var(split+1:end));
+if CheckRange(min, max)
+    handles.text31.String = var;
+    handles.output.UserData.plotlimitsx = [min max];
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else 
+    warn = sprintf('Invalid inputs. Setting must be two integers separated by a colon. \nExamples: 1:500, 5:100, 60:90');
+    warning(warn);
+end
 
 
-% --- Executes when user attempts to close figure1.
-function figure1_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
+% --- Executes during object creation, after setting all properties.
+function edit4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit3_Callback(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Save dialogue
-answer = SaveDialogue;
-if strcmp(answer, 'Yes')
-    pushbutton4_Callback(handles.figure1, eventdata, handles);
-    disp('Saved!');
+% Hints: get(hObject,'String') returns contents of edit3 as text
+%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text30.String = num2str(var);
+    handles.output.UserData.baselinelength = var;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
 end
 
-% Hint: delete(hObject) closes the figure
-delete(hObject);
+
+% --- Executes during object creation, after setting all properties.
+function edit3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text29.String = num2str(var);
+    handles.output.UserData.maxmeplength = var;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
 
 
 function edit1_Callback(hObject, eventdata, handles)
@@ -217,19 +341,15 @@ function edit1_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit1 as text
 %        str2double(get(hObject,'String')) returns contents of edit1 as a double
-frame = str2double(get(hObject,'String'));
-
-if frame >= 1 && frame <= handles.settings.cframes
-    handles.settings.currentframe = frame;
-    ShowFrameOnAxis(handles);
-
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text28.String = num2str(var);
+    handles.output.UserData.artifactlength = var;
+    
     % Update handles structure
     guidata(hObject, handles);
     
-    % Reset string inside edit box
-    handles.edit1.String = 'Go to Frame...';
-    
-else warning('Not a valid frame.');
+else warning('Invalid input type. Must be an integer.');
 end
 
 
@@ -246,248 +366,46 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton5.
-function pushbutton5_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton5 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Toggle extra buttons on
-ToggleButtonDisplay(handles,1);
-
-% Zoom in and find peaks
-[peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles);
-
-% Add peaks/valleys to popupmenus for callbacks
-handles.popupmenu1.UserData.peaks = peaks;
-handles.popupmenu1.UserData.peaksloc = peaksloc;
-handles.popupmenu2.UserData.valleys = valleys;
-handles.popupmenu2.UserData.valleysloc = valleysloc;
-
-% Update handles structure
-guidata(hObject, handles);
-
-handles.popupmenu1.String = {'All Peaks', peaks};
-handles.popupmenu2.String = {'All Valleys', valleys};
-
-
-% --- Executes on button press in pushbutton6.
-function pushbutton6_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton6 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
-
-
 % --- Executes on button press in pushbutton7.
 function pushbutton7_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Toggle buttons back off
-ToggleButtonDisplay(handles,0);
-
-% Show current frame on axis
-ShowFrameOnAxis(handles); 
-
-
-% --- Executes on selection change in popupmenu1.
-function popupmenu1_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu1
-
-[peaksIndex, valleysIndex] = GetSelectedPeaksIndex(handles);
-[currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex, valleysIndex);
-
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in popupmenu2.
-function popupmenu2_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu2
-
-[peaksIndex, valleysIndex] = GetSelectedPeaksIndex(handles);
-[currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex, valleysIndex);
-
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in pushbutton8.
-function pushbutton8_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton8 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-PlotCurrentRecordedAmplitude(handles);
-
-
-% --- Executes on button press in pushbutton10.
-function pushbutton10_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton10 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-set(handles.popupmenu1,'Value',1);
-set(handles.popupmenu2,'Value',1);
-popupmenu1_Callback(handles.popupmenu1, eventdata, handles);
-popupmenu2_Callback(handles.popupmenu2, eventdata, handles);
-
-
-% --- Executes on button press in pushbutton12.
-function pushbutton12_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton12 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Get current selected peak/valley
-cPeaks = cellstr(get(handles.popupmenu1,'String'));
-cValleys = cellstr(get(handles.popupmenu2,'String'));
-peak = str2double(cPeaks{get(handles.popupmenu1,'Value')});
-valley = str2double(cValleys{get(handles.popupmenu2,'Value')});
-
-% Check inputs for correct format
-if ~isnan(peak) && ~isnan(valley)
-    
-   % Make sure they want to make changes
-   answer = SetNewAmpDialogue(peak,valley);
-   if strcmp(answer, 'Yes')
-
-       handles.TMS(handles.settings.currentframe,handles.settings.id.Tmax) = peak;
-       handles.TMS(handles.settings.currentframe,handles.settings.id.Tmin) = valley;
-
-       % Update handles structure
-       guidata(hObject, handles);
-       
-       % Hide buttons again
-       ToggleButtonDisplay(handles,0);
-
-       % Save
-       pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
-       
-       % Go back and show frame
-       ShowFrameOnAxis(handles);
-
-   end
-end
-    
-    
-% --- Executes on button press in pushbutton13.
-function pushbutton13_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton13 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-currentTrial = handles.settings.currentframe;
-if handles.pushbutton13.UserData
-    
-    answer = RejectionConfirmationDialogue(currentTrial);
-    if strcmp(answer, 'Yes')
-
-       % Set to TMS matrix
-       handles.TMS(currentTrial, handles.settings.id.Trej_manual) = 1;
-
-    end
-    
-else
-    
-    % Reset TMS matrix to 0
-    handles.TMS(currentTrial, handles.settings.id.Trej_nopulse:handles.settings.id.Trej_manual) = 0;
-    
-end
-
-% Set buttons off again
-ToggleButtonDisplay(handles,0);
+SetDefaultSettings(handles);
 
 % Update handles structure
 guidata(hObject, handles);
 
-% Save
-pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
-
-% Go back and show frame
-ShowFrameOnAxis(handles);
 
 
-% --- Executes on button press in pushbutton14.
-function pushbutton14_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton14 (see GCBO)
+function edit6_Callback(hObject, eventdata, handles)
+% hObject    handle to edit6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-rej = handles.settings.filter_by(handles.TMS, handles.settings.id.Trej_manual);
-disp(rej);
-
-
-function edit2_Callback(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit2 as text
-%        str2double(get(hObject,'String')) returns contents of edit2 as a double
-
+% Hints: get(hObject,'String') returns contents of edit6 as text
+%        str2double(get(hObject,'String')) returns contents of edit6 as a double
 var = get(hObject, 'String');
+var = var{1};
 split = strfind(var,':');
 min = str2double(var(1:split-1));
 max = str2double(var(split+1:end));
 if CheckRange(min, max)
-    
-    % Set new MEP window in TMS matrix
-    handles.TMS(handles.settings.currentframe, handles.settings.id.Taonset) = min - handles.settings.artifactlength;
-    handles.TMS(handles.settings.currentframe, handles.settings.id.Tmoffset) = max;
+    handles.text34.String = var;
+    handles.output.UserData.plotlimitsy = [min max];
     
     % Update handles structure
     guidata(hObject, handles);
-    
-    % Save
-    pushbutton4_Callback(handles.pushbutton4, eventdata, handles);
-    
-    % Reset string on edit2
-    handles.edit2.String = 'Min:Max';
     
 else 
     warn = sprintf('Invalid inputs. Setting must be two integers separated by a colon. \nExamples: 1:500, 5:100, 60:90');
     warning(warn);
 end
 
-% Re-display the current frame with new MEP offset
-ShowFrameOnAxis(handles);
-
 
 % --- Executes during object creation, after setting all properties.
-function edit2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function edit6_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
