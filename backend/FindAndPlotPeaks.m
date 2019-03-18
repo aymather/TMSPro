@@ -8,38 +8,53 @@ function [peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles)
     % Get mean and average out data
     m = mean(raw);
     adj = m;
-
+    
     % Get Peaks
     [peaks, peaksloc] = findpeaks(raw, 'MinPeakHeight', adj);
     [valleys, valleysloc] = findpeaks(-raw, 'MinPeakHeight', adj);
-
-    % Plot on axes
-    axes(handles.axes1); cla;
-    l = plot(raw, '-b'); hold on;
     
-    % Title
-    rejs = handles.TMS(handles.settings.currentframe,handles.settings.id.Trej_nopulse:handles.settings.id.Trej_maxex);
-    if sum(rejs) > 0
-        set(l,'Color',[1 0 0]);
-        title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}REJECTED: ']; handles.settings.rejreasons{find(rejs,1,'first')}});
-    elseif handles.TMS(handles.settings.currentframe, handles.settings.id.Trej_other)
-        set(l,'Color',[1 0 0]);
-        title({['Trial ' num2str(handles.settings.currentframe) ', \color[rgb]{1 0 0}Manually Rejected']; ''});
+    if isempty(peaks) || isempty(valleys)
+        
+        warning('Not detecting enough activity within MEP window. Try setting a new MEP window.');
+        
     else
-        title({['Trial ' num2str(handles.settings.currentframe) ', Amplitude: ' num2str(handles.TMS(handles.settings.currentframe,handles.settings.id.Tmep)) ' mV. \color[rgb]{0 0.5 0}accepted' ];''});
+        
+        % Plot on axes
+        axes(handles.axes1); cla;
+        l = plot(raw, '-b'); hold on;
+
+        % Title
+        makeTitleForAxis(handles, l)
+
+        % Label peaks/valleys
+        peaksPlot = plot(peaksloc,  peaks, '^r');
+        valleysPlot = plot(valleysloc, -valleys, 'vg');
+        for it = 1:length(peaksPlot.XData)
+            text(peaksPlot.XData(it), peaksPlot.YData(it)-.01, num2str(peaks(it)));
+        end
+        for it = 1:length(valleysPlot.XData)
+            text(valleysPlot.XData(it), valleysPlot.YData(it)-.01, num2str(-valleys(it)));
+        end
+        set(gca, 'YLim', [min(-valleys)-.05 max(peaks)+.05])
+        hold off;
+        valleys = -valleys;
+        
+        % Toggle extra buttons on
+        ToggleButtonDisplay(handles,1);
+        
+        % Add peaks/valleys to popupmenus for callbacks
+        handles.popupmenu1.UserData.peaks = peaks;
+        handles.popupmenu1.UserData.peaksloc = peaksloc;
+        handles.popupmenu2.UserData.valleys = valleys;
+        handles.popupmenu2.UserData.valleysloc = valleysloc;
+
+        % Put peaks/valleys into popupmenu options
+        handles.popupmenu1.String = {'All Peaks', peaks};
+        handles.popupmenu2.String = {'All Valleys', valleys};
+        
+        % Update handles structure
+        guidata(hObject, handles);
+        
     end
-    
-    % Label peaks/valleys
-    peaksPlot = plot(peaksloc,  peaks, '^r');
-    valleysPlot = plot(valleysloc, -valleys, 'vg');
-    for it = 1:length(peaksPlot.XData)
-        text(peaksPlot.XData(it), peaksPlot.YData(it)-.01, num2str(peaks(it)));
-    end
-    for it = 1:length(valleysPlot.XData)
-        text(valleysPlot.XData(it), valleysPlot.YData(it)-.01, num2str(-valleys(it)));
-    end
-    set(gca, 'YLim', [min(-valleys)-.05 max(peaks)+.05])
-    hold off;
-    valleys = -valleys;
     
 end

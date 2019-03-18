@@ -23,6 +23,7 @@ function [settings, TMS, tms] = TMSPro_init(data)
         % Get all trials that match a rejection criteria
         settings.filter_by = @(TMS, col) TMS(TMS(:,col) == 1,:);
         settings.get_accepted = @(TMS, cols) TMS(~all(TMS(:,cols) == 0,2) == 0,:);
+        settings.get_rejected = @(TMS, cols) TMS(any(TMS(:,cols) == 1,2) == 1,:);
 
         % Reasons for rejections
         settings.rejreasons = { ...

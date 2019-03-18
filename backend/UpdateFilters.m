@@ -10,6 +10,7 @@ function handles = UpdateFilters(handles)
 
     % Get all accepted
     handles.TMS_temp.accepted = handles.settings.get_accepted(handles.TMS, handles.settings.id.Trej_nopulse:handles.settings.id.Trej_other);
+    handles.TMS_temp.rejected = handles.settings.get_rejected(handles.TMS, handles.settings.id.Trej_nopulse:handles.settings.id.Trej_other);
     
     % All trials
     handles.TMS_temp.all = handles.TMS;
@@ -27,6 +28,7 @@ function handles = UpdateFilters(handles)
         end
     end
 
-    handles.popupmenu3.String = ['All', 'Accepted', available_filters];
+    handles.popupmenu3.String = ['All', 'Accepted', 'Rejected', available_filters];
+    handles.popupmenu4.String = ['All', 'Accepted', 'Rejected', available_filters];
 
 end

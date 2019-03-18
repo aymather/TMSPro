@@ -22,7 +22,7 @@ function varargout = TMSPro_Main(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 17-Mar-2019 17:11:26
+% Last Modified by GUIDE v2.5 18-Mar-2019 16:22:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -77,6 +77,9 @@ handles = UpdateFilters(handles);
 
 % Create a matrix that represents the current scrolling TMS matrix
 handles.TMS_current = handles.TMS;
+
+% Init export matrix
+handles.export = handles.TMS;
 
 % Show current working frame
 ShowFrameOnAxis(handles);
@@ -259,23 +262,15 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Toggle extra buttons on
-ToggleButtonDisplay(handles,1);
+% Only do something if it is an accepted trial & has an onset/offset
+if all(handles.TMS(handles.settings.currentframe,handles.settings.id.Trej_nopulse:handles.settings.id.Trej_other) == 0) && ...
+    handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset) ~= 0 && ...
+    handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset) ~= 0
 
-% Zoom in and find peaks
-[peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles);
-
-% Add peaks/valleys to popupmenus for callbacks
-handles.popupmenu1.UserData.peaks = peaks;
-handles.popupmenu1.UserData.peaksloc = peaksloc;
-handles.popupmenu2.UserData.valleys = valleys;
-handles.popupmenu2.UserData.valleysloc = valleysloc;
-
-% Update handles structure
-guidata(hObject, handles);
-
-handles.popupmenu1.String = {'All Peaks', peaks};
-handles.popupmenu2.String = {'All Valleys', valleys};
+    % Zoom in and find peaks
+    [peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles);
+    
+end
 
 
 % --- Executes on button press in pushbutton6.
@@ -536,6 +531,8 @@ switch val
         handles.TMS_current = handles.TMS_temp.accepted;
     case 'All'
         handles.TMS_current = handles.TMS_temp.all;
+    case 'Rejected'
+        handles.TMS_current = handles.TMS_temp.rejected;
         
 end
 
@@ -564,3 +561,72 @@ end
 % Update handles structure
 guidata(hObject, handles);
     
+
+% --- Executes on button press in pushbutton16.
+function pushbutton16_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton16 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get export file
+[filen, filep] = uiputfile;
+[~,~,ext] = fileparts(filen); % get chosen filename's extension
+if strcmp(ext,'.mldatx'); filen = strrep(filen, '.mldatx', '.mat'); end
+ffile = fullfile(filep, filen);
+
+% Unwrap data to save in export file
+settings = handles.settings;
+TMS = handles.export;
+tms = handles.tms;
+
+% Save
+save(ffile, 'settings', 'TMS', 'tms');
+
+% --- Executes on selection change in popupmenu4.
+function popupmenu4_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu4 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu4
+contents = cellstr(get(hObject,'String'));
+val = contents{get(hObject,'Value')};
+switch val
+    
+    case 'No MEP (< 0.01)'
+        handles.export = handles.TMS_temp.nomep;
+    case 'Baseline too noisy (>0.01)'
+        handles.export = handles.TMS_temp.absbase;
+    case 'No Pulse'
+        handles.export = handles.TMS_temp.nopulse;
+    case 'MEP maxed out (negatively)'
+        handles.export = handles.TMS_temp.minex;
+    case 'MEP maxed out (postively)'
+        handles.export = handles.TMS_temp.maxex;
+    case 'Other'
+        handles.export = handles.TMS_temp.other;
+    case 'Accepted'
+        handles.export = handles.TMS_temp.accepted;
+    case 'All'
+        handles.export = handles.TMS_temp.all;
+    case 'Rejected'
+        handles.export = handles.TMS_temp.rejected;
+        
+end
+
+% Update handles structure
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
