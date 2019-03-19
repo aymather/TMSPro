@@ -6,7 +6,7 @@ function FindAndPlotPeaks(handles)
     raw = handles.tms.data.values(onset : offset,1,handles.settings.currentframe);
     
     % Get mean and average out data
-    m = handles.settings.minamplitude/2;
+    m = handles.settings.minamplitude;
     
     % Get Peaks
     [peaks, peaksloc] = findpeaks(raw, 'MinPeakHeight', m);

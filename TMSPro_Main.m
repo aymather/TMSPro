@@ -238,6 +238,9 @@ if frame >= 1 && frame <= handles.settings.cframes
     
     % Reset string inside edit box
     handles.edit1.String = 'Go to Frame...';
+    set(hObject, 'Enable', 'off');
+    drawnow;
+    set(hObject, 'Enable', 'on');
     
 else warning('Not a valid frame.');
 end
@@ -480,6 +483,9 @@ if CheckRange(min, max)
     
     % Reset string on edit2
     handles.edit2.String = 'Min:Max';
+    set(hObject, 'Enable', 'off');
+    drawnow;
+    set(hObject, 'Enable', 'on');
     
 else 
     warn = sprintf('Invalid inputs. Setting must be two integers separated by a colon. \nExamples: 1:500, 5:100, 60:90');
@@ -539,11 +545,16 @@ end
 % Reset the countindex and get current frame
 handles = resetCountIndex(handles);
 
-% Show frame
-ShowFrameOnAxis(handles);
-        
+% Unset focus
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
+
 % Update handles structure
 guidata(hObject, handles);
+
+% Show frame
+ShowFrameOnAxis(handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -614,6 +625,11 @@ switch val
         handles.export = handles.TMS_temp.rejected;
         
 end
+
+% Unset focus
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
 
 % Update handles structure
 guidata(hObject, handles);

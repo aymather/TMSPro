@@ -39,7 +39,7 @@ function ShowFrameOnAxis(handles)
        handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset) > 0 && ...
        handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset) > 0 && ...
        handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset) < handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset)
-        set(gca,'XTick',[handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset)+10*handles.settings.srate/1000 handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset)],'Xgrid','on');
+        set(gca,'XTick',[handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset)*handles.settings.srate/1000 handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset)],'Xgrid','on');
         xlabel(['time (samples), Rate: ' num2str(handles.settings.srate) ' Hz']);
     else
         set(gca,'XTick',[]);

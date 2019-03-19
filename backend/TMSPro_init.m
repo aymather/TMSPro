@@ -101,7 +101,7 @@ function [settings, TMS, tms] = TMSPro_init(data)
             % compute MEP (from artonset + 10 ms)
             MEP = thisdata(artonset+10*settings.srate/1000 : mepoffset);
             if ~isempty(artonset) && ~isempty(mepoffset) && ~isempty(MEP)
-                TMS(it,settings.id.Taonset) = artonset;
+                TMS(it,settings.id.Taonset) = artonset + settings.artifactlength;
                 TMS(it,settings.id.Tmoffset) = mepoffset;
                 TMS(it,settings.id.Tmin) = min(MEP);
                 TMS(it,settings.id.Tmax) = max(MEP);

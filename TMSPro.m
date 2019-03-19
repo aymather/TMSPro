@@ -427,7 +427,7 @@ function edit7_Callback(hObject, eventdata, handles)
 var = str2double(get(hObject,'String'));
 if CheckSetSetting(var)
     handles.text35.String = num2str(var);
-    handles.output.UserData.artifactlength = var;
+    handles.output.UserData.minamplitude = var;   
     
     % Update handles structure
     guidata(hObject, handles);

@@ -30,4 +30,12 @@ function [currentPeaks, currentValleys] = PlotSelectedPeaks(handles, peaksIndex,
     currentPeaks = handles.popupmenu1.UserData.peaks(peaksIndex);
     currentValleys = handles.popupmenu2.UserData.valleys(valleysIndex);
     
+    set(handles.popupmenu1, 'Enable', 'off');
+    drawnow;
+    set(handles.popupmenu1, 'Enable', 'on');
+    
+    set(handles.popupmenu2, 'Enable', 'off');
+    drawnow;
+    set(handles.popupmenu2, 'Enable', 'on');
+    
 end
