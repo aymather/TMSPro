@@ -60,6 +60,7 @@ function [settings, TMS, tms] = TMSPro_init(data)
         settings.countindex = 1; % for scrolling through filters
         settings.artifactlength = data.artifactlength; % distance between peak of artifact and beginning of MEP
         settings.plotlimitsy = data.plotlimitsy; % vertical plot limits on normal plotting
+        settings.minamplitude = data.minamplitude;
         
         % Number of frames
         settings.cframes = tms.data.frames;

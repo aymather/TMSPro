@@ -22,7 +22,7 @@ function varargout = TMSPro(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 17-Mar-2019 18:32:52
+% Last Modified by GUIDE v2.5 18-Mar-2019 17:38:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -406,6 +406,39 @@ end
 % --- Executes during object creation, after setting all properties.
 function edit6_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit7_Callback(hObject, eventdata, handles)
+% hObject    handle to edit7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit7 as text
+%        str2double(get(hObject,'String')) returns contents of edit7 as a double
+var = str2double(get(hObject,'String'));
+if CheckSetSetting(var)
+    handles.text35.String = num2str(var);
+    handles.output.UserData.artifactlength = var;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+else warning('Invalid input type. Must be an integer.');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function edit7_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

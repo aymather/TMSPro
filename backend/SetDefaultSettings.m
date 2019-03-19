@@ -7,6 +7,7 @@ function SetDefaultSettings(handles)
     handles.output.UserData.plotlimitsx = [1 500];
     handles.output.UserData.artifactfactor = 2.5;
     handles.output.UserData.plotlimitsy = [-2 2];
+    handles.output.UserData.minamplitude = 1;
     
     % Set those values to the strings displayed to user
     handles.text28.String = '10';
@@ -15,5 +16,6 @@ function SetDefaultSettings(handles)
     handles.text31.String = '1:500';
     handles.text33.String = '2.5';
     handles.text34.String = '-2:2';
+    handles.text35.String = '1';
 
 end

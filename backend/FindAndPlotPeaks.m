@@ -1,17 +1,16 @@
-function [peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles)
+function FindAndPlotPeaks(handles)
 
     % Extract data
-    onset = handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset) + handles.settings.artifactlength;
+    onset = handles.TMS(handles.settings.currentframe,handles.settings.id.Taonset);
     offset = handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset);
     raw = handles.tms.data.values(onset : offset,1,handles.settings.currentframe);
     
     % Get mean and average out data
-    m = mean(raw);
-    adj = m;
+    m = handles.settings.minamplitude/2;
     
     % Get Peaks
-    [peaks, peaksloc] = findpeaks(raw, 'MinPeakHeight', adj);
-    [valleys, valleysloc] = findpeaks(-raw, 'MinPeakHeight', adj);
+    [peaks, peaksloc] = findpeaks(raw, 'MinPeakHeight', m);
+    [valleys, valleysloc] = findpeaks(-raw, 'MinPeakHeight', m);
     
     if isempty(peaks) || isempty(valleys)
         
@@ -53,7 +52,8 @@ function [peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles)
         handles.popupmenu2.String = {'All Valleys', valleys};
         
         % Update handles structure
-        guidata(hObject, handles);
+        guidata(handles.popupmenu1, handles);
+        guidata(handles.popupmenu2, handles);
         
     end
     

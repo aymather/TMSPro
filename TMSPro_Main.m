@@ -268,7 +268,7 @@ if all(handles.TMS(handles.settings.currentframe,handles.settings.id.Trej_nopuls
     handles.TMS(handles.settings.currentframe,handles.settings.id.Tmoffset) ~= 0
 
     % Zoom in and find peaks
-    [peaks, peaksloc, valleys, valleysloc] = FindAndPlotPeaks(handles);
+    FindAndPlotPeaks(handles);
     
 end
 
@@ -469,7 +469,7 @@ max = str2double(var(split+1:end));
 if CheckRange(min, max)
     
     % Set new MEP window in TMS matrix
-    handles.TMS(handles.settings.currentframe, handles.settings.id.Taonset) = min - handles.settings.artifactlength;
+    handles.TMS(handles.settings.currentframe, handles.settings.id.Taonset) = min;
     handles.TMS(handles.settings.currentframe, handles.settings.id.Tmoffset) = max;
     
     % Update handles structure
