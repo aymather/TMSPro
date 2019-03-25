@@ -28,6 +28,8 @@ function handles = UpdateFilters(handles)
         end
     end
 
+    handles.popupmenu3.Value = 1;
+    handles.popupmenu4.Value = 1;
     handles.popupmenu3.String = ['All', 'Accepted', 'Rejected', available_filters];
     handles.popupmenu4.String = ['All', 'Accepted', 'Rejected', available_filters];
 
