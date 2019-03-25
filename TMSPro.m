@@ -215,6 +215,10 @@ if CheckSetSetting(var)
 else warning('Invalid input type. Must be an integer.');
 end
 
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
+
 
 % --- Executes during object creation, after setting all properties.
 function edit5_CreateFcn(hObject, eventdata, handles)
@@ -253,6 +257,10 @@ else
     warning(warn);
 end
 
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
+
 
 % --- Executes during object creation, after setting all properties.
 function edit4_CreateFcn(hObject, eventdata, handles)
@@ -285,6 +293,10 @@ if CheckSetSetting(var)
     
 else warning('Invalid input type. Must be an integer.');
 end
+
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -319,6 +331,9 @@ if CheckSetSetting(var)
 else warning('Invalid input type. Must be an integer.');
 end
 
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
 
 % --- Executes during object creation, after setting all properties.
 function edit2_CreateFcn(hObject, eventdata, handles)
@@ -351,6 +366,10 @@ if CheckSetSetting(var)
     
 else warning('Invalid input type. Must be an integer.');
 end
+
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -402,6 +421,10 @@ else
     warning(warn);
 end
 
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
+
 
 % --- Executes during object creation, after setting all properties.
 function edit6_CreateFcn(hObject, eventdata, handles)
@@ -434,6 +457,10 @@ if CheckSetSetting(var)
     
 else warning('Invalid input type. Must be an integer.');
 end
+
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
 
 
 % --- Executes during object creation, after setting all properties.
