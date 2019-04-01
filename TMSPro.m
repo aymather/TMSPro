@@ -135,9 +135,9 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [filen, filep] = uiputfile; % open dialogue
-[~,~,ext] = fileparts(filen); % get chosen filename's extension
-if strcmp(ext,'.mldatx'); filen = strrep(filen, '.mldatx', '.mat'); end % if no extension is given, make it a .mat file
 if all(filen ~= 0) || all(filep ~= 0)
+    [~,~,ext] = fileparts(filen); % get chosen filename's extension
+    if strcmp(ext,'.mldatx'); filen = strrep(filen, '.mldatx', '.mat'); end % if no extension is given, make it a .mat file
     ffile = fullfile(filep, filen);
     if strcmp(ffile(end-3:end), '.mat')
         handles.output.UserData.outputFile = ffile; % set output data
