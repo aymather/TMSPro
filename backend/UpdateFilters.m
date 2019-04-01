@@ -28,14 +28,10 @@ function handles = UpdateFilters(handles)
         end
     end
 
-<<<<<<< HEAD
     handles.popupmenu3.String = 1;
     handles.popupmenu4.String = 1;
-||||||| merged common ancestors
-=======
     handles.popupmenu3.Value = 1;
     handles.popupmenu4.Value = 1;
->>>>>>> 37972cc4a34f15268c0a08149eda96db0e4bc10c
     handles.popupmenu3.String = ['All', 'Accepted', 'Rejected', available_filters];
     handles.popupmenu4.String = ['All', 'Accepted', 'Rejected', available_filters];
 
