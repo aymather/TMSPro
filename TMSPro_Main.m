@@ -196,6 +196,7 @@ settings = handles.settings;
 TMS = handles.TMS;
 tms = handles.tms;
 save(settings.files.outfile, 'settings', 'TMS', 'tms');
+disp('Saved!');
 
 
 % --- Executes when user attempts to close figure1.
@@ -581,17 +582,21 @@ function pushbutton16_Callback(hObject, eventdata, handles)
 
 % Get export file
 [filen, filep] = uiputfile;
-[~,~,ext] = fileparts(filen); % get chosen filename's extension
-if strcmp(ext,'.mldatx'); filen = strrep(filen, '.mldatx', '.mat'); end
-ffile = fullfile(filep, filen);
+if all(filen ~= 0) || all(filep ~= 0)
+    
+    [~,~,ext] = fileparts(filen); % get chosen filename's extension
+    if strcmp(ext,'.mldatx'); filen = strrep(filen, '.mldatx', '.mat'); end
+    ffile = fullfile(filep, filen);
 
-% Unwrap data to save in export file
-settings = handles.settings;
-TMS = handles.export;
-tms = handles.tms;
+    % Unwrap data to save in export file
+    settings = handles.settings;
+    TMS = handles.export;
+    tms = handles.tms;
 
-% Save
-save(ffile, 'settings', 'TMS', 'tms');
+    % Save
+    save(ffile, 'settings', 'TMS', 'tms');
+    
+end
 
 % --- Executes on selection change in popupmenu4.
 function popupmenu4_Callback(hObject, eventdata, handles)
