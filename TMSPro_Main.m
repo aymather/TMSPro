@@ -22,7 +22,7 @@ function varargout = TMSPro_Main(varargin)
 
 % Edit the above text to modify the response to help TMSPro
 
-% Last Modified by GUIDE v2.5 18-Mar-2019 16:22:24
+% Last Modified by GUIDE v2.5 18-Apr-2019 08:36:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -647,6 +647,60 @@ function popupmenu4_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit3_Callback(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit3 as text
+%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+var = get(hObject, 'String');
+split = strfind(var,':');
+min = str2double(var(1:split-1));
+max = str2double(var(split+1:end));
+if CheckRange(min, max)
+    answer = GlobalMEPConfirmation;
+    if strcmpi(answer, 'Yes')
+        
+        % Set new MEP window in all frames of TMS matrix
+        handles.TMS(:, handles.settings.id.Taonset) = min;
+        handles.TMS(:, handles.settings.id.Tmoffset) = max;
+        
+        % Show new frame
+        ShowFrameOnAxis(handles)
+        
+    end
+else 
+    warn = sprintf('Invalid inputs. Setting must be two integers separated by a colon. \nExamples: 1:500, 5:100, 60:90');
+    warning(warn);
+end
+
+% Unset focus
+set(hObject, 'Enable', 'off');
+drawnow;
+set(hObject, 'Enable', 'on');
+
+% Update handles structure
+guidata(hObject, handles);
+
+% Reset string on edit3
+handles.edit3.String = 'Min:Max';
+
+
+% --- Executes during object creation, after setting all properties.
+function edit3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
