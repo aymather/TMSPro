@@ -389,9 +389,13 @@ if ~isnan(peak) && ~isnan(valley)
    % Make sure they want to make changes
    answer = SetNewAmpDialogue(peak,valley);
    if strcmp(answer, 'Yes')
-
+       
+       % Adjust new peak/valley to TMS matrix
        handles.TMS(handles.settings.currentframe,handles.settings.id.Tmax) = peak;
        handles.TMS(handles.settings.currentframe,handles.settings.id.Tmin) = valley;
+       
+       % Adjust new amplitude to TMS matrix
+       handles.TMS(handles.settings.currentframe,handles.settings.id.Tmep) = abs(peak) + abs(valley);
        
        % Update filters
        handles = UpdateFilters(handles);
